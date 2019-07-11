@@ -13,9 +13,9 @@ List<String> studyMembers = Collections.unmodifiableList(Arrays.aslist("김슬�
 
 //이렇게 선언된 리스트엔 요소를 추가할 수 없다. 
 try {
-    studyMembers.add("손경성");
+    studyMembers.add("손흥민");
 } catch(UnsupportedOperationException e) {
-    log.error("나이제한 초과입니다." , e);
+    log.error("정원 초과입니다." , e);
 }
 ```
 
@@ -151,8 +151,19 @@ open class BaseIntegrationTest {
 
 ```kotlin
 val god = GOD_NAME
+
+//stdout: "이성준"
 println(god)
 ```
+
+*사용해보니*
+
+- 각 테스트 suite에 난잡하게 흩어져있던 값 선언부들을 정리할 수 있었다. 
+    - 결과적으로 코드양을 획기적으로 줄였다. 
+    - 값을 할당할 때 발생하는 **human error**를 조기에 잡아낼 수 있다. 
+- 값을 꼭 **클래스에 담지 않아도 된다**
+- 값은 값이다 
+
 
 
 
