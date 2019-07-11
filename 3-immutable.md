@@ -59,6 +59,41 @@ val studyMembers = listOf("김슬아", "민세원", "이정혁", "이성준")
 studyMembers.add("김준현")
 ```
 
+**var와 val**
+
+- var: [바-르] 라고 읽는다.
+- val: [발] 이다.
+
+*Java의 `final` 키워드와 같은 개념으로 접근하면 쉽다.*
+
+```java
+public class Money {
+    private final int won;
+}
+```
+
+```kotlin
+data class Money(
+    val won: Int = 0
+)
+```
+
+- 단순히 **선언 및 최초할당 후 재할당** 을 막는 것이다. 
+
+*Spring에서의 깨알 활용*
+
+`Constructor Injection` 과 코틀린의 `val` 을 적절히 활용하면, 깔끔(해 보이기는 하지만 별로 안 깔끔)한 코드를 구현할 수 있다. 
+
+```kotlin
+
+//클래스의 생성자를 선언하며, 생성자의 파라미터를 바로 `val` 필드로 받아버렸다. 
+//스프링이 생성자 주입을 지원하므로, 이제 ShoppingRepository 구현체를 주입받아 비즈니스 로직을 바로 작성할 수 있게 된다. 
+@Service
+class ShoppingService(val shoppingRepository:ShoppingRepository) {
+
+}
+```
+
 **참조 불변성** 
 
 Java 개발자에게도 익숙한 개념이다. 
@@ -164,8 +199,10 @@ println(god)
 - 값을 꼭 **클래스에 담지 않아도 된다**
 - 값은 값이다 
 
+### 불변성의 장점
 
+**스레드 안정성**
 
+불변값을 사용하면 우주의 기운으로 쓰레드가 안정되어 코어 온도가 낮아진다고 한다. 
 
-
-
+책을 보면서 같이 공부하자 
