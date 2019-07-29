@@ -598,8 +598,6 @@ operator fun Wolf.not() = "$name is angry!!!"
 
 http://blog.naver.com/PostView.nhn?blogId=yuyyulee&logNo=221389623237&categoryNo=22&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=search
 
-![스크린샷 2019-07-28 오후 4.13.31](/Users/user/Desktop/스크린샷 2019-07-28 오후 4.13.31.png)
-
 <br><br>
 
 
