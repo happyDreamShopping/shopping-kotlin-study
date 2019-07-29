@@ -425,3 +425,183 @@ val worker = Worker()
 멤버 함수와 같은이름 가진 함수를 서명하는 것은 문제가 되지 않지만 **멤버 함수가 언제나 우선권을 가지므로 확장 함수는 호출되지 않는다. 이 기능은 멤버 함수가 private인 경우에 변경된다.**
 
 <br><br>
+
+---
+
+<br>
+
+### 중위 함수
+
+하나의 파라미터만 가진 함수는 **infix로 표기할 수 있**으며, 중위 표기법과 함께 사용할 수 있다.
+
+많은 infix을 연결해 내부 DSL을 만들 수 있다.
+
+> DSL(Domain Specific Language)은 특정 도메인에 특화된 언어다.
+
+```kotlin
+infix fun Int.superOperation(i: Int) = this + i
+
+object Belong
+
+object Us
+
+object Base {
+    infix fun are(belong: Belong) = this
+}
+
+object All {
+    infix fun your(base: Pair<Base, Us>) {
+    }
+}
+
+fun main(args: Array<String>) {
+    println(1 superOperation 2) //이와 같이 중위표기법 사용가능
+    println(1.superOperation(2))
+
+    All your (Base are Belong to Us)
+    All your (Pair(Base are Belong, Us))
+}
+```
+
+<br>
+
+infix 확장 함수 <K,V>K.to(v:V) 와 같은 형태로도 쓸 수 있다.
+
+```kotlin
+/**
+ * Creates a tuple of type [Pair] from this and [that].
+ *
+ * This can be useful for creating [Map] literals with less noise, for example:
+ * @sample samples.collections.Maps.Instantiation.mapFromPairs
+ */
+public infix fun <A, B> A.to(that: B): Pair<A, B> = Pair(this, that)
+```
+
+<br>
+
+### 연산자 오버로딩
+
+연산자 오버로딩은 다형성의 한 가지 형태이다.
+
+파라미터 타입에 따라 동작이 바뀐다. --> 숫자 값에서 더하기(+)는 합 연산이고, 문자열에서는 연결이다.
+
+```kotlin
+class Wolf(val name: String) {
+    operator fun plus(wolf: Wolf) = Pack(mapOf(name to this, wolf.name to wolf))
+}
+
+
+val talbot = Wolf("Talbot")
+val northPack: Pack = talbot + Wolf("Big Bertha") // talbot.plus(Wolf("Big Bertha"))
+print(northPack.members)
+---
+
+{Talbot=Wolf@28a418fc, Big Bertha=Wolf@5305068a}
+```
+
+<br>
+
+### 바이너리 연산자
+
+Pack.plus 확장 함수는 Wolf 파라미터를 받고 새로운 Pack을 반환한다.
+
+153 page, 155 page 참조
+
+> x + y —> x.plus(y)
+> x - y —> x.minus(y)
+>
+> ...
+
+```kotlin
+operator fun Pack.plus(wolf: Wolf) = Pack(this.members.toMutableMap() + (wolf.name to wolf))
+
+val biggerPack = northPack + Wolf("Bad Wolf")
+
+---
+
+{Talbot=Wolf@8efb846, Big Bertha=Wolf@2a84aee7, Bad Wolf=Wolf@a09ee92}
+```
+
+<br>
+
+### Invoke
+
+invoke  연산자는 이름 없이 호출 될 수 있다.
+
+
+
+```kotlin
+class Wolf(val name: String) {
+    operator fun plus(wolf: Wolf) = Pack(mapOf(name to this, wolf.name to wolf))
+
+    operator fun invoke(action: WolfActions) = when (action) {
+        WolfActions.SLEEP -> "$name is sleeping"
+        WolfActions.WALK -> "$name is walking"
+        WolfActions.BITE -> "$name is biting"
+    }
+}
+
+val talbot = Wolf("Talbot")
+println(talbot(WolfActions.SLEEP))
+
+---
+
+Talbot is sleeping
+```
+
+<br>
+
+### 인덱싱된 접근
+
+코틀린 데이터 구조는 get 연산자의 정의가 있다.
+
+ ==> **x[y] == x. get(y) page 156**
+
+```kotlin
+//class Pack(val members: Map<String, Wolf>)
+operator fun Pack.get(name:String) = members[name]!!
+
+val badWolf = biggerPack["Bad Wolf"]
+```
+
+<br>
+
+set 연산자도 마찬가지로 다음과 같다
+
+ ==> **x[y] = z == x.set(y, z)**
+
+<br>
+
+### Unary 연산자
+
+Unary 연산자에는 파라미터가 없으며, 디스패처에서 직접 작동한다.
+
+```kotlin
+operator fun Wolf.not() = "$name is angry!!!"
+
+!talbot
+```
+
+> +x —> x.unaryPlus()
+>
+> -x —> x.unaryMinus()
+>
+> ...
+
+<br>
+
+### 인라인 함수
+
+- 성능이 우선인 경우, 인라인으로 고차 함수를 표시 할 수 있다.
+
+- 모든 할 수를 인라인을 사용하여 내부로 컨버팅되어지길 원치 않을 수 있다. 이런 경우 람다함수 중 사용하지 않을 함수에 noinline 키워드를 붙여줍니다.
+
+http://blog.naver.com/PostView.nhn?blogId=yuyyulee&logNo=221389623237&categoryNo=22&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=search
+
+![스크린샷 2019-07-28 오후 4.13.31](/Users/user/Desktop/스크린샷 2019-07-28 오후 4.13.31.png)
+
+<br><br>
+
+
+
+
