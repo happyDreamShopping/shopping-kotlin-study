@@ -51,6 +51,9 @@ fun main(args: Array<String>) = runBlocking<Unit> {
   }
   jobs.forEach { it.join() }
 }
+
+---
+Exception in thread "main" java.lang.OutOfMemoryError: unable to create new native thread
 ```
 - Coroutine은 Thread와 동일하게 Concurrency를 제공하며, 하나 이상의 진입 지점을 갖는 Subroutine이다.
   - Subroutine
