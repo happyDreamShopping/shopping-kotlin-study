@@ -1,4 +1,4 @@
-1. [ JVM Thread. ](#1)
+1. [ Thread. ](#1)
 2. [ Coroutine. ](#2)
 
 <a name="1"></a>
@@ -8,22 +8,6 @@
 - OS의 Preemping Scheduler 에 의해 Thread를 결정하고 작업을 수행함으로써 동시성을 보장한다.
   - Thread 생성/삭제
   - Context Switching
-```
-import java.util.concurrent.Executor
-import java.util.concurrent.TimeUnit
-
-fun main(args: Array<String>){
-  val executor = Executors.newFixedThreadPool(1024)
-  repeat(10000){
-    executor.submit {
-      Thread.sleep(1000)
-      print('.')
-    }
-  }
-  executor.shutdown()
-}
-```
-- FixedThreadPool(1024)을 사용하여 10,000 task를 실행한다.
 
 
 <a name="2"></a>
@@ -38,14 +22,28 @@ fun main(args: Array<String>){
 - 사용자 스케쥴러에 의해 life-time을 갖는다.
 - 여러 Thread에서 하나의 coroutine이 실행될 수 있다.
 - Thread와 달리 coroutine 끼리는 선점형(preemptive)이 아니라 협력형(cooperate) 멀티태스킹 방식을 사용한다.
-- 동일한 Thread에서 동시에 실행될 수 없다.
 - OS가 아닌 User에 의해 context switching이 발생한다. 물론 OS에 의해 fiber가 동작 중인 thread가 해제될 순 있다. 
 - fiber에서 수행되는 I/O 작업의 경우 만드시 비동기로 해야 다른 fiber가 blocking 되지 않는다. 
 
 - ![Alt text](./resources/chapter-7-coroutine_thread.PNG)
 
     
-## 2-1. Deep dive Coroutine
-#### Stackful coroutines
+## 3. Example
+- 책의 예제가 쓰레기라 공식 문서 내용을 설명합니다.
 
-#### Stackful coroutines flow
+
+### Coroutine basics
+```
+package kotlinx.coroutines.guide.basic01
+
+import kotlinx.coroutines.*
+
+fun main() {
+    GlobalScope.launch { // launch a new coroutine in background and continue
+        delay(1000L) // non-blocking delay for 1 second (default time unit is ms)
+        println("World!") // print after delay
+    }
+    println("Hello,") // main thread continues while coroutine is delayed
+    Thread.sleep(2000L) // block main thread for 2 seconds to keep JVM alive
+}
+```
