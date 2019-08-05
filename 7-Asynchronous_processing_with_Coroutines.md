@@ -1,5 +1,6 @@
 1. [ Thread. ](#1)
 2. [ Coroutine. ](#2)
+3. [ Examples. ](#3)
 
 <a name="1"></a>
 ## 1. Thread
@@ -12,6 +13,45 @@
 
 <a name="2"></a>
 ## 2. Coroutine
+- **Coroutines are like very light-weight threads**
+```
+fun main(args: Array<String>) = runBlocking<Unit> {
+  val jobs = List(100_000) {
+      launch {
+          delay(1000L)
+          print(".")
+      }
+  }
+  jobs.forEach { it.join() }
+}
+
+fun print(s: String) {
+    val current = LocalDateTime.now()
+    println("[${Thread.currentThread().name}][$current] $s")
+}
+
+---
+[main @coroutine#79443][2019-08-06T00:00:16.083] .
+[main @coroutine#79444][2019-08-06T00:00:16.083] .
+[main @coroutine#79445][2019-08-06T00:00:16.083] .
+...
+[main @coroutine#99999][2019-08-06T00:00:16.236] .
+[main @coroutine#100000][2019-08-06T00:00:16.236] .
+[main @coroutine#100001][2019-08-06T00:00:16.238] .
+
+```
+
+```
+fun main(args: Array<String>) = runBlocking<Unit> {
+  val jobs = List(100_000) {
+      thread {
+          Thread.sleep(1000L)
+          print(".")
+      }
+  }
+  jobs.forEach { it.join() }
+}
+```
 - Coroutine은 Thread와 동일하게 Concurrency를 제공하며, 하나 이상의 진입 지점을 갖는 Subroutine이다.
   - Subroutine
     - 하나의 진입 지점을 갖는 실행 가능한 코드 블럭으로, 언어에 따라 precedure, function, routine, method, subprogram 등으로 불린다.
@@ -31,19 +71,70 @@
 ## 3. Example
 - 책의 예제가 쓰레기라 공식 문서 내용을 설명합니다.
 
+### 3-1. Introduction Coroutines
+- 
 
 ### Coroutine basics
+1. Callbacks
+```
+```
+
+
 ```
 package kotlinx.coroutines.guide.basic01
 
 import kotlinx.coroutines.*
+import java.time.LocalDateTime
 
 fun main() {
     GlobalScope.launch { // launch a new coroutine in background and continue
         delay(1000L) // non-blocking delay for 1 second (default time unit is ms)
-        println("World!") // print after delay
+        print("World!") // print after delay
     }
-    println("Hello,") // main thread continues while coroutine is delayed
+    print("Hello,") // main thread continues while coroutine is delayed
     Thread.sleep(2000L) // block main thread for 2 seconds to keep JVM alive
 }
+
+fun print(s: String) {
+    val current = LocalDateTime.now()
+    println("[${Thread.currentThread().name}][$current] $s")
+}
+
+--
+[main][2019-08-05T23:47:21.417] Hello,
+[DefaultDispatcher-worker-1 @coroutine#1][2019-08-05T23:47:22.387] World!
+
+Process finished with exit code 0
+
+```
+- `CoroutineScope` context의 launch 함수를 통해 coroutine builder를 실행한다.
+  - `GlobalScope`: A global CoroutineScope not bound to any job.
+
+### Bridging blocking and non-blocking worlds
+```
+package kotlinx.coroutines.guide.basic01
+
+import kotlinx.coroutines.*
+import java.time.LocalDateTime
+
+fun main() = runBlocking<Unit> { // start main coroutine
+    GlobalScope.launch { // launch a new coroutine in background and continue
+        delay(1000L)
+        print("World!")
+    }
+    print("Hello,") // main coroutine continues here immediately
+    delay(2000L)      // delaying for 2 seconds to keep JVM alive
+}
+
+fun print(s: String) {
+    val current = LocalDateTime.now()
+    println("[${Thread.currentThread().name}][$current] $s")
+}
+
+--
+[main @coroutine#1][2019-08-05T23:46:15.306] Hello,
+[DefaultDispatcher-worker-1 @coroutine#2][2019-08-05T23:46:16.266] World!
+
+Process finished with exit code 0
+
 ```
