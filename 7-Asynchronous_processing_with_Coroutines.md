@@ -21,7 +21,7 @@ sometext
       
       
   - **Co**routine
-  ![Alt text](./resources/chapter-7-coroutine.PNG)
+  ![Alt text](./resources/chapter-7-coroutines.PNG)
     - 하나 이상의 진입 지점을 가질 수 있는 Subroutine
   
   
