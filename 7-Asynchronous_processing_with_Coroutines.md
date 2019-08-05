@@ -74,15 +74,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: unable to create new nati
 ## 3. Example
 - 책의 예제가 쓰레기라 공식 문서 내용을 설명합니다.
 
-### 3-1. Introduction Coroutines
-- 
-
-### Coroutine basics
-1. Callbacks
-```
-```
-
-
+### 3-1. Coroutines basics
 ```
 package kotlinx.coroutines.guide.basic01
 
@@ -112,32 +104,12 @@ Process finished with exit code 0
 ```
 - `CoroutineScope` context의 launch 함수를 통해 coroutine builder를 실행한다.
   - `GlobalScope`: A global CoroutineScope not bound to any job.
-
-### Bridging blocking and non-blocking worlds
-```
-package kotlinx.coroutines.guide.basic01
-
-import kotlinx.coroutines.*
-import java.time.LocalDateTime
-
-fun main() = runBlocking<Unit> { // start main coroutine
-    GlobalScope.launch { // launch a new coroutine in background and continue
-        delay(1000L)
-        print("World!")
-    }
-    print("Hello,") // main coroutine continues here immediately
-    delay(2000L)      // delaying for 2 seconds to keep JVM alive
-}
-
-fun print(s: String) {
-    val current = LocalDateTime.now()
-    println("[${Thread.currentThread().name}][$current] $s")
-}
-
---
-[main @coroutine#1][2019-08-05T23:46:15.306] Hello,
-[DefaultDispatcher-worker-1 @coroutine#2][2019-08-05T23:46:16.266] World!
-
-Process finished with exit code 0
-
-```
+  
+### 3-2. Cancellation and timeouts
+### 3-3. Composing suspending functions
+### 3-4. Coroutine context and dispatchers
+### 3-5. Exception handling
+### 3-6. Supervision
+### 3-7. Channels
+### 3-8. Shared mutable state and concurrency
+### 3-9. Select expression (experimental)
