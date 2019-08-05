@@ -29,8 +29,8 @@ fun print(s: String) {
     val current = LocalDateTime.now()
     println("[${Thread.currentThread().name}][$current] $s")
 }
-
----
+```
+```
 [main @coroutine#79443][2019-08-06T00:00:16.083] .
 [main @coroutine#79444][2019-08-06T00:00:16.083] .
 [main @coroutine#79445][2019-08-06T00:00:16.083] .
@@ -38,9 +38,9 @@ fun print(s: String) {
 [main @coroutine#99999][2019-08-06T00:00:16.236] .
 [main @coroutine#100000][2019-08-06T00:00:16.236] .
 [main @coroutine#100001][2019-08-06T00:00:16.238] .
-
 ```
 
+- 위를 coroutine이 아니라 thread로 변경하면??
 ```
 fun main(args: Array<String>) = runBlocking<Unit> {
   val jobs = List(100_000) {
@@ -51,10 +51,11 @@ fun main(args: Array<String>) = runBlocking<Unit> {
   }
   jobs.forEach { it.join() }
 }
-
----
+```
+```
 Exception in thread "main" java.lang.OutOfMemoryError: unable to create new native thread
 ```
+
 - Coroutine은 Thread와 동일하게 Concurrency를 제공하며, 하나 이상의 진입 지점을 갖는 Subroutine이다.
   - Subroutine
     - 하나의 진입 지점을 갖는 실행 가능한 코드 블럭으로, 언어에 따라 precedure, function, routine, method, subprogram 등으로 불린다.
@@ -94,19 +95,77 @@ fun print(s: String) {
     val current = LocalDateTime.now()
     println("[${Thread.currentThread().name}][$current] $s")
 }
+```
 
---
+```
 [main][2019-08-05T23:47:21.417] Hello,
 [DefaultDispatcher-worker-1 @coroutine#1][2019-08-05T23:47:22.387] World!
 
 Process finished with exit code 0
-
 ```
 - `CoroutineScope` context의 launch 함수를 통해 coroutine builder를 실행한다.
   - `GlobalScope`: A global CoroutineScope not bound to any job.
   
 ### 3-2. Cancellation and timeouts
+```
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+//sampleStart
+    val job = launch {
+        repeat(1000) { i ->
+            println("job: I'm sleeping $i ...")
+            delay(500L)
+        }
+    }
+    delay(1300L) // delay a bit
+    println("main: I'm tired of waiting!")
+    job.cancel() // cancels the job
+    job.join() // waits for job's completion 
+    println("main: Now I can quit.")
+}
+```
+```
+job: I'm sleeping 0 ...
+job: I'm sleeping 1 ...
+job: I'm sleeping 2 ...
+main: I'm tired of waiting!
+main: Now I can quit.
+```
+- 이처럼 coroutine은 long-running job의 경우 Job 객체를 리턴하여 cancel할 수 있다.
+
 ### 3-3. Composing suspending functions
+```
+import kotlinx.coroutines.*
+import kotlin.system.*
+
+fun main() = runBlocking<Unit> {
+//sampleStart
+    val time = measureTimeMillis {
+        val one = doSomethingUsefulOne()
+        val two = doSomethingUsefulTwo()
+        println("The answer is ${one + two}")
+    }
+    println("Completed in $time ms")
+//sampleEnd    
+}
+
+suspend fun doSomethingUsefulOne(): Int {
+    delay(1000L) // pretend we are doing something useful here
+    return 13
+}
+
+suspend fun doSomethingUsefulTwo(): Int {
+    delay(1000L) // pretend we are doing something useful here, too
+    return 29
+}
+```
+- 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
+
+
+
+
+
 ### 3-4. Coroutine context and dispatchers
 ### 3-5. Exception handling
 ### 3-6. Supervision
