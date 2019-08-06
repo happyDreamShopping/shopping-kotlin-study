@@ -279,14 +279,6 @@ Process finished with exit code 0
 - async하게 coroutine 함수를 실행하는 경우 `async` couroutine builder와 `GolbalScope` 를 사용한다.
 
 
-### 3-4. Coroutine context and dispatchers
-### 3-5. Exception handling
-### 3-6. Supervision
-### 3-7. Channels
-### 3-8. Shared mutable state and concurrency
-### 3-9. Select expression (experimental)
-
-
 <a name="4"></a>
 ## 4. References
 - https://github.com/Kotlin/kotlinx.coroutines
