@@ -81,7 +81,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: unable to create new nati
 - ![Alt text](./resources/chapter-7-coroutine_thread.PNG)
 
     
-## 3. Example
+## 3. Examples
 - 책의 예제가 쓰레기라 공식 문서 내용을 설명합니다.
 
 ### 1. Coroutines basics
