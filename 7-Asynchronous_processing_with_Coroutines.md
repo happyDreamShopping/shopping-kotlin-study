@@ -39,6 +39,10 @@ fun print(s: String) {
 [main @coroutine#100000][2019-08-06T00:00:16.236] .
 [main @coroutine#100001][2019-08-06T00:00:16.238] .
 ```
+- coroutin은 `CoroutineScope` interface를 통해 CoroutineContext를 정의하고, launch를 통해 실행된다.
+  - [CoroutineScope](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/index.html)
+  - [CoroutineContext](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/-coroutine-scope/coroutine-context.html)
+  
 
 - 위를 coroutine이 아니라 thread로 변경하면??
 ```
@@ -160,6 +164,7 @@ suspend fun doSomethingUsefulTwo(): Int {
     return 29
 }
 ```
+- `suspend` keyword는 coroutine builder를 통해 
 - 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
 
 
