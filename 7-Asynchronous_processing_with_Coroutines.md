@@ -84,7 +84,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: unable to create new nati
 ## 3. Example
 - 책의 예제가 쓰레기라 공식 문서 내용을 설명합니다.
 
-### 3-1. Coroutines basics
+### 1. Coroutines basics
 ```
 package kotlinx.coroutines.guide.basic01
 
@@ -115,7 +115,7 @@ Process finished with exit code 0
 - `CoroutineScope` context의 launch 함수를 통해 coroutine builder를 실행한다.
   - `GlobalScope`: A global CoroutineScope not bound to any job.
   
-### 3-2. Cancellation and timeouts
+### 2. Cancellation and timeouts
 ```
 import kotlinx.coroutines.*
 
@@ -143,7 +143,7 @@ main: Now I can quit.
 ```
 - 이처럼 coroutine은 long-running job의 경우 Job 객체를 리턴하여 cancel할 수 있다.
 
-### 3-3. Composing suspending functions
+### 3. Composing suspending functions
 ```
 import kotlinx.coroutines.*
 import kotlin.system.*
@@ -189,6 +189,9 @@ suspend fun doSomethingUsefulTwo(): Int {
   ```
    ![Alt text](./resources/chapter-7-coroutine-scope.png)
 
+- 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
+
+### 4. Lazily started async
 ```
 import kotlinx.coroutines.*
 import kotlin.system.*
@@ -221,11 +224,57 @@ suspend fun doSomethingUsefulTwo(): Int {
 
 Process finished with exit code 0
 ```
+- lazily하게 coroutine을 실행할 수도 있으며 이 경우 `async` option을 사용한다.
+- awaiy/start 가 invoke될 때 실행된다.
 
-- 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
+### 5. Async-style functions
+```
+import kotlinx.coroutines.*
+import kotlin.system.*
 
+//sampleStart
+// note that we don't have `runBlocking` to the right of `main` in this example
+fun main() {
+    val time = measureTimeMillis {
+        // we can initiate async actions outside of a coroutine
+        val one = somethingUsefulOneAsync()
+        val two = somethingUsefulTwoAsync()
+        // but waiting for a result must involve either suspending or blocking.
+        // here we use `runBlocking { ... }` to block the main thread while waiting for the result
+        runBlocking {
+            println("The answer is ${one.await() + two.await()}")
+        }
+    }
+    println("Completed in $time ms")
+}
+//sampleEnd
 
+fun somethingUsefulOneAsync() = GlobalScope.async {
+    doSomethingUsefulOne()
+}
 
+fun somethingUsefulTwoAsync() = GlobalScope.async {
+    doSomethingUsefulTwo()
+}
+
+suspend fun doSomethingUsefulOne(): Int {
+    delay(1000L) // pretend we are doing something useful here
+    return 13
+}
+
+suspend fun doSomethingUsefulTwo(): Int {
+    delay(1000L) // pretend we are doing something useful here, too
+    return 29
+}
+```
+```
+[main @coroutine#3][2019-08-06T11:55:31.424] The answer is 42
+[main][2019-08-06T11:55:31.425] Completed in 1168 ms
+
+Process finished with exit code 0
+```
+
+- async하게 coroutine 함수를 실행하는 경우 `async` couroutine builder와 `GolbalScope` 를 사용한다.
 
 
 ### 3-4. Coroutine context and dispatchers
