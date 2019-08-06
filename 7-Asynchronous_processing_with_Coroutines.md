@@ -187,9 +187,39 @@ suspend fun doSomethingUsefulTwo(): Int {
      fun resumeWithException(exception: Throwable)
   }
   ```
+   ![Alt text](./resources/chapter-7-coroutine-scope.png)
 
 ```
+import kotlinx.coroutines.*
+import kotlin.system.*
 
+fun main() = runBlocking<Unit> {
+//sampleStart
+    val time = measureTimeMillis {
+        val one = async { doSomethingUsefulOne() }
+        val two = async { doSomethingUsefulTwo() }
+        println("The answer is ${one.await() + two.await()}")
+    }
+    println("Completed in $time ms")
+//sampleEnd    
+}
+
+suspend fun doSomethingUsefulOne(): Int {
+    delay(1000L) // pretend we are doing something useful here
+    return 13
+}
+
+suspend fun doSomethingUsefulTwo(): Int {
+    delay(1000L) // pretend we are doing something useful here, too
+    return 29
+}
+```
+
+```
+[main @coroutine#1][2019-08-06T11:44:54.323] The answer is 42
+[main @coroutine#1][2019-08-06T11:44:54.324] Completed in 1089 ms
+
+Process finished with exit code 0
 ```
 
 - 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
