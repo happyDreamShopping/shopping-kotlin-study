@@ -14,6 +14,10 @@
 <a name="2"></a>
 ## 2. Coroutine
 - **Coroutines are like very light-weight threads**
+  - suspend function
+  - coroutine context
+  - coroutine scope
+  - coroutine builder
 ```
 fun main(args: Array<String>) = runBlocking<Unit> {
   val jobs = List(100_000) {
@@ -60,7 +64,8 @@ fun main(args: Array<String>) = runBlocking<Unit> {
 Exception in thread "main" java.lang.OutOfMemoryError: unable to create new native thread
 ```
 
-- Coroutine은 Thread와 동일하게 Concurrency를 제공하며, 하나 이상의 진입 지점을 갖는 Subroutine이다.
+- Coroutine은 Thread와 동일하게 Concurrency를 제공하며, **하나 이상의 진입 지점을 갖는** Subroutine이다.
+  - callee가 code block을 수행하고 결과를 caller에게 return하는 대신 coroutine handler를 통해 suspend/resume이 가능하다.
   - Subroutine
     - 하나의 진입 지점을 갖는 실행 가능한 코드 블럭으로, 언어에 따라 precedure, function, routine, method, subprogram 등으로 불린다.
       - return a computed value to its caller
@@ -164,7 +169,29 @@ suspend fun doSomethingUsefulTwo(): Int {
     return 29
 }
 ```
-- `suspend` keyword는 coroutine builder를 통해 
+- `suspend` keyword는 coroutine의 핵심개념으로 `suspend` 키워드를 붙이면 coroutine으로 정의된다.
+- `suspend` keyword 함수는 compiler에 의해 `Continuation` type의 parameter가 추가된다.
+  ```
+  suspend fun backgroundTask(param: Int): Int {
+     // long running operation
+  }
+  
+  fun backgroundTask(param: Int, callback: Continuation<Int>): Int {
+   // long running operation
+  }
+  ```
+  ```
+  interface Continuation<in T> {
+     val context: CoroutineContext
+     fun resume(value: T)
+     fun resumeWithException(exception: Throwable)
+  }
+  ```
+
+```
+
+```
+
 - 기본적으로 코드는 순차적으로 수행되며, 위 예제와 같이 coroutine 역시 순차적으로 수행된다.  
 
 
